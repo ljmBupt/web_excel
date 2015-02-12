@@ -6,7 +6,8 @@ import tornado.options
 import tornado.web
 
 import os
-import xlrd
+# import xlrd
+import mysql.connector as mdb
 
 from tornado.options import define, options
 
@@ -45,13 +46,20 @@ class ExcelHandler(tornado.web.RequestHandler):
         excel_path = os.path.join(os.path.dirname(__file__), "excel")
         file_path = os.path.join(excel_path, filename)
         try:
-            data = xlrd.open_workbook(file_path)
+            conn = mdb.connect(user='root', password='', database='test', use_unicode=True)
+            cursor = conn.cursor()
+            cursor.execute('select count(*) from excel where filename = %s', [filename])
+            values = cursor.fetchall()
+            nrows = values[0][0]
+            text = []
+            for i in range(nrows):
+                cursor.execute('select * from excel where filename = %s and rownum = %s', [filename, str(i)])
+                values = cursor.fetchall()
+                text.append(values[0][2].split(','))
+            cursor.close()
+            conn.close()
         except StandardError, e:
             print e
-        table = data.sheet_by_index(0)
-        text = []
-        for i in range(table.nrows):
-            text.append(table.row_values(i))
         return text
 
     def post(self):
