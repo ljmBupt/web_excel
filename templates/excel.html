@@ -1,0 +1,18 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="{{ static_url("style.css") }}">
+    <title>{{ filename }} text</title>
+  </head>
+  <body>
+    <h1>{{ filename }}</h1>
+    <table border="1">
+      {% for row in text %}
+        <tr>
+        {% for cell in row %}
+          <td>{{ cell }}</td>
+        {% end %}
+        </tr>
+      {% end %}
+    </table>
+  </body>
+</html>
